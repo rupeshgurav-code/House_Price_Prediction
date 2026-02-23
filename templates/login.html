@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - House Price Prediction</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='3d-house.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container auth-container">
+    <h1>🔐 Login</h1>
+    <p class="subtitle">Sign in to access House Price Prediction</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="/login" method="post" class="auth-form">
+        <div class="form-group">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+    </form>
+
+    <p class="auth-link">
+        Don't have an account? <a href="/signup">Sign Up</a>
+    </p>
+</div>
+
+</body>
+</html>

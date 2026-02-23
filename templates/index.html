@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>House Price Prediction</title>
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='3d-house.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+
+
+<div class="container">
+    <div class="header-bar">
+        <h1>🏠 House Price Prediction</h1>
+        {% if username %}
+        <div class="user-info">
+            <span>Welcome, <strong>{{ username }}</strong></span>
+            <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <p class="subtitle">Enter your house details to estimate the price in ₹</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="/predict" method="post">
+        <div class="form-group">
+            <input type="number" name="area" placeholder="Area (sq ft)" required>
+            <input type="number" name="bedrooms" placeholder="Bedrooms" required>
+            <input type="number" name="bathrooms" placeholder="Bathrooms" required>
+            <input type="number" name="floor" placeholder="Floor Number" required>
+            <input type="number" name="total_floors" placeholder="Total Floors" required>
+
+            <select name="furnished" required>
+                <option value="" disabled selected>Furnished Status</option>
+                <option value="0">Unfurnished</option>
+                <option value="1">Semi-Furnished</option>
+                <option value="2">Fully-Furnished</option>
+            </select>
+
+            <input type="number" name="balcony" placeholder="Number of Balconies" required>
+            <input type="number" name="age_of_house" placeholder="Age of House" required>
+            <input type="number" name="parking" placeholder="Parking Spots" required>
+
+            <select name="near_school" required>
+                <option value="" disabled selected>School Nearby?</option>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+
+            <select name="near_metro" required>
+                <option value="" disabled selected>Metro Nearby?</option>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn">Predict Price</button>
+    </form>
+
+    {% if prediction_text %}
+    <div class="result">
+        <h2>{{ prediction_text }}</h2>
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
