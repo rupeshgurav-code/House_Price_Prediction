@@ -16,12 +16,17 @@ login_manager.login_view = "login"
 login_manager.login_message = "Please log in to access this page."
 login_manager.login_message_category = "info"
 
+# Get base directory (works for local and Vercel)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if os.path.basename(BASE_DIR) == 'api':
+    BASE_DIR = os.path.dirname(BASE_DIR)
+
 # Load model and scaler
-model = joblib.load("model/house_model.pkl")
-scaler = joblib.load("model/scaler.pkl")
+model = joblib.load(os.path.join(BASE_DIR, "model", "house_model.pkl"))
+scaler = joblib.load(os.path.join(BASE_DIR, "model", "scaler.pkl"))
 
 # User database file
-USER_DB_FILE = "users.json"
+USER_DB_FILE = os.path.join(BASE_DIR, "users.json")
 
 
 # ============== User Model ==============
