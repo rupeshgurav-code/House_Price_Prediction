@@ -1,74 +1,73 @@
-import numpy as np
 import pandas as pd
+import numpy as np
+import os
+import joblib
+
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-import joblib
-import os
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-# Create dummy data (Replace this with your real dataset)
-np.random.seed(42)
-n_samples = 1000
+# =========================
+# LOAD REAL DATASET
+# =========================
+DATA_PATH = "data.csv"   # <-- your CSV file
 
-data = {
-    'area': np.random.randint(500, 5000, n_samples),
-    'bedrooms': np.random.randint(1, 6, n_samples),
-    'bathrooms': np.random.randint(1, 5, n_samples),
-    'floor': np.random.randint(0, 20, n_samples),
-    'total_floors': np.random.randint(1, 30, n_samples),
-    'furnished': np.random.randint(0, 3, n_samples),  # 0, 1, 2
-    'balcony': np.random.randint(0, 4, n_samples),
-    'age_of_house': np.random.randint(0, 50, n_samples),
-    'parking': np.random.randint(0, 4, n_samples),
-    'near_school': np.random.randint(0, 2, n_samples),  # 0 or 1
-    'near_metro': np.random.randint(0, 2, n_samples),   # 0 or 1
-}
+df = pd.read_csv(DATA_PATH)
 
-# Create DataFrame
-df = pd.DataFrame(data)
+print("\n📊 Dataset Loaded")
+print(df.head())
 
-# Generate price (dummy formula for demonstration)
-# Price = (area * 1500) + (bedrooms * 50000) + ...
-df['price'] = (
-    df['area'] * 2000 +
-    df['bedrooms'] * 50000 +
-    df['bathrooms'] * 30000 +
-    df['floor'] * 2000 +
-    df['furnished'] * 50000 +
-    df['balcony'] * 15000 +
-    (50 - df['age_of_house']) * 1000 +
-    df['parking'] * 20000 +
-    df['near_school'] * 30000 +
-    df['near_metro'] * 50000 +
-    np.random.randint(-100000, 100000, n_samples)
+# =========================
+# SPLIT FEATURES & TARGET
+# =========================
+X = df.drop("price", axis=1)
+y = df["price"]
+
+feature_names = X.columns.tolist()
+
+# =========================
+# TRAIN TEST SPLIT
+# =========================
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
 )
 
-# Features and Target
-X = df.drop('price', axis=1)
-y = df['price']
+# =========================
+# MODEL
+# =========================
+model = RandomForestRegressor(
+    n_estimators=300,
+    max_depth=20,
+    random_state=42,
+    n_jobs=-1
+)
 
-# Split data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model.fit(X_train, y_train)
 
-# Scale features
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+# =========================
+# PREDICTION
+# =========================
+y_pred = model.predict(X_test)
 
-# Train Model
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-model.fit(X_train_scaled, y_train)
+# =========================
+# METRICS
+# =========================
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+r2 = r2_score(y_test, y_pred)
 
-# Evaluate
-accuracy = model.score(X_test_scaled, y_test)
-print(f"Model Accuracy: {accuracy * 100:.2f}%")
+print("\n📊 MODEL PERFORMANCE")
+print("-------------------")
+print(f"MAE  : {mae:,.2f}")
+print(f"RMSE : {rmse:,.2f}")
+print(f"R2   : {r2:.4f}")
 
-# Create folders if not exist
-if not os.path.exists('model'):
-    os.makedirs('model')
+# =========================
+# SAVE MODEL
+# =========================
+os.makedirs("model", exist_ok=True)
 
-# Save model and scaler
-joblib.dump(model, 'model/house_model.pkl')
-joblib.dump(scaler, 'model/scaler.pkl')
+joblib.dump(model, "model/house_model.pkl")
+joblib.dump(feature_names, "model/features.pkl")
 
-print("Model and Scaler saved successfully!")
+print("\n✅ Model trained on REAL data and saved!")

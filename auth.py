@@ -1,19 +1,14 @@
-from flask import Flask
-from flask_login import LoginManager, UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
-# Initialize Flask app for auth (will be configured in app.py)
-login_manager = LoginManager()
-
-# User database file
 USER_DB_FILE = "users.json"
 
 
 class User(UserMixin):
     def __init__(self, id, username, password_hash):
-        self.id = id
+        self.id = str(id)
         self.username = username
         self.password_hash = password_hash
 
@@ -22,72 +17,58 @@ class User(UserMixin):
 
 
 def load_users():
-    """Load users from JSON file."""
     if not os.path.exists(USER_DB_FILE):
         return {}
-    with open(USER_DB_FILE, "r") as f:
-        return json.load(f)
+
+    try:
+        with open(USER_DB_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return {}
 
 
 def save_users(users):
-    """Save users to JSON file."""
     with open(USER_DB_FILE, "w") as f:
         json.dump(users, f, indent=2)
 
 
 def create_user(username, password):
-    """Create a new user."""
     users = load_users()
-    
-    # Check if username already exists
-    for user_id, user_data in users.items():
-        if user_data["username"] == username:
+
+    for u in users.values():
+        if u["username"] == username:
             return None, "Username already exists"
-    
-    # Generate new user ID
-    new_id = str(max([int(uid) for uid in users.keys()], default=0) + 1)
-    
-    # Hash password
-    password_hash = generate_password_hash(password)
-    
-    # Create user
+
+    new_id = str(len(users) + 1)
+
+    hashed = generate_password_hash(password)  # IMPORTANT
+
     users[new_id] = {
         "id": new_id,
         "username": username,
-        "password_hash": password_hash
+        "password_hash": hashed
     }
-    
+
     save_users(users)
-    return User(new_id, username, password_hash), None
+
+    return User(new_id, username, hashed), None
 
 
 def authenticate_user(username, password):
-    """Authenticate a user."""
     users = load_users()
-    
-    for user_data in users.values():
-        if user_data["username"] == username:
-            user = User(user_data["id"], user_data["username"], user_data["password_hash"])
+
+    for u in users.values():
+        if u["username"] == username:
+
+            user = User(u["id"], u["username"], u["password_hash"])
+
             if user.check_password(password):
                 return user, None
-            return None, "Invalid password"
-    
+
+            return None, "Wrong password"
+
     return None, "User not found"
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    """Load user by ID."""
-    users = load_users()
-    user_data = users.get(str(user_id))
-    if user_data:
-        return User(user_data["id"], user_data["username"], user_data["password_hash"])
-    return None
-
-
 def init_auth(app):
-    """Initialize authentication with Flask app."""
-    login_manager.init_app(app)
-    login_manager.login_view = "login"
-    login_manager.login_message = "Please log in to access this page."
-    login_manager.login_message_category = "info"
+    pass

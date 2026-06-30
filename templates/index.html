@@ -1,78 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>House Price Prediction</title>
-<link rel="icon" type="image/png" href="/static/3d-house.png">
+    <title>House Price Predictor</title>
+
     <link rel="stylesheet" href="/static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='image.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    
 
+<div class="background"></div>
 
-<div class="container">
-    <div class="header-bar">
-        <h1>🏠 House Price Prediction</h1>
-        {% if username %}
-        <div class="user-info">
-            <span>Welcome, <strong>{{ username }}</strong></span>
-            <a href="/logout" class="btn-logout">Logout</a>
-        </div>
-        {% endif %}
-    </div>
-    
-    <p class="subtitle">Enter your house details to estimate the price in ₹</p>
+<div class="app-container">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <form action="/predict" method="post">
-        <div class="form-group">
-            <input type="number" name="area" placeholder="Area (sq ft)" required>
-            <input type="number" name="bedrooms" placeholder="Bedrooms" required>
-            <input type="number" name="bathrooms" placeholder="Bathrooms" required>
-            <input type="number" name="floor" placeholder="Floor Number" required>
-            <input type="number" name="total_floors" placeholder="Total Floors" required>
-
-            <select name="furnished" required>
-                <option value="" disabled selected>Furnished Status</option>
-                <option value="0">Unfurnished</option>
-                <option value="1">Semi-Furnished</option>
-                <option value="2">Fully-Furnished</option>
-            </select>
-
-            <input type="number" name="balcony" placeholder="Number of Balconies" required>
-            <input type="number" name="age_of_house" placeholder="Age of House" required>
-            <input type="number" name="parking" placeholder="Parking Spots" required>
-
-            <select name="near_school" required>
-                <option value="" disabled selected>School Nearby?</option>
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-            </select>
-
-            <select name="near_metro" required>
-                <option value="" disabled selected>Metro Nearby?</option>
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-            </select>
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>🏠 House Price Predictor</h1>
+            <p>AI-powered real estate price estimation</p>
         </div>
 
-        <button type="submit" class="btn">Predict Price</button>
-    </form>
-
-    {% if prediction_text %}
-    <div class="result">
-        <h2>{{ prediction_text }}</h2>
+        <div class="user-box">
+            <span>Welcome, <b>{{ username }}</b></span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
     </div>
-    {% endif %}
+
+    <!-- FORM CARD -->
+    <div class="card">
+
+        <form id="predictForm">
+
+            <div class="grid">
+
+                <input name="area" placeholder="Area (sq ft)" required>
+                <input name="bedrooms" placeholder="Bedrooms" required>
+                <input name="bathrooms" placeholder="Bathrooms" required>
+                <input name="floor" placeholder="Floor Number" required>
+                <input name="total_floors" placeholder="Total Floors" required>
+                <input name="furnished" placeholder="Furnished (0-2)" required>
+                <input name="balcony" placeholder="Balconies" required>
+                <input name="age_of_house" placeholder="Age of House" required>
+                <input name="parking" placeholder="Parking Spots" required>
+                <input name="near_school" placeholder="Near School (0/1)" required>
+                <input name="near_metro" placeholder="Near Metro (0/1)" required>
+
+            </div>
+
+            <button type="submit" id="predictBtn">
+                🔮 Predict Price
+            </button>
+
+        </form>
+
+        <!-- RESULT BOX -->
+        <div id="result" class="result-box"></div>
+
+    </div>
+
 </div>
+
+<script src="/static/script.js"></script>
 
 </body>
 </html>

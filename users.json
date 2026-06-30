@@ -8,5 +8,10 @@
     "id": "2",
     "username": "admin",
     "password_hash": "scrypt:32768:8:1$mop9B69nDN7hbTFq$4e544569c238531447f440713252ca8ca8415fa3d1c5131551f7864b51faf3c58587c5da1cb90458c23a2c247071a98363699f8fb6a86b57238263cdbf58446b"
+  },
+  "3": {
+    "id": "3",
+    "username": "ram",
+    "password_hash": "scrypt:32768:8:1$TImyybedsWOadmqD$c882831ebe5544609674f3fa50569e0bbb3339baa3d71968eebd284d9725c08ca21e3354885c9117d0060ecb903ed69095f0ad4b29a1e4347ee1b5477063edeb"
   }
 }
